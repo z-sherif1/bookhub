@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Log In | BookHub{% endblock title %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    <h2 class="text-center mb-4">Welcome Back</h2>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% include "includes/form.html" %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Login
+                        </button>
+                    </form>
+
+                    <p class="text-center mt-3 mb-0">
+                        Don't have an account?
+                        <a href="{% url 'signup' %}">Sign Up</a>
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,41 @@
+ {% extends "base.html" %}
+
+{% block title %}Home | BookHub{% endblock %}
+
+{% block content %}
+
+<div class="books-container">
+    {% for book in books %}
+        <div class="book-card">
+
+            <div class="book-cover">
+                {% if book.cover_i %}
+                    <img
+                        src="https://covers.openlibrary.org/b/id/{{ book.cover_i }}-M.jpg"
+                        alt="Cover of {{ book.title }}"
+                        loading="lazy"
+                    >
+                {% else %}
+                    <div class="book-cover-placeholder">
+                        <i class="bi bi-book"></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="book-info">
+                <h5 class="book-title"><a href="{% url 'book_detail' book.key|cut:'/works/' %}" class='book-title-linkb'>{{ book.title }}</a></h5>
+
+                <p class="book-author">
+                    {{ book.author_name|join:", "|default:"Unknown author" }}
+                </p>
+
+                <p class="book-year">
+                    {{ book.first_publish_year|default:"Year unknown" }}
+                </p>
+            </div>
+
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

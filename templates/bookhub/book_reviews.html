@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews for {{ book.title }} | BookHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="mb-4">
+        <h2>Reviews for: {{ book.title }}</h2>
+        <p class="text-muted">By {{ book.authors|default:"Unknown author" }}</p>
+        <a href="{% url 'book_detail' book.open_library_id|cut:'/works/'|cut:'/' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Book Detail
+        </a>
+    </div>
+
+    {% if reviews %}
+        <div class="row g-3">
+            {% for review in reviews %}
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-person-circle me-1"></i> {{ review.user.username }}
+                                </h5>
+                                <span class="badge bg-warning text-dark">
+                                    Rating: {{ review.rating }}/5 <i class="bi bi-star-fill"></i>
+                                </span>
+                            </div>
+                            <p class="card-text text-muted small mb-2">
+                                Posted on {{ review.created_at|date:"F j, Y, g:i a" }}
+                            </p>
+                            {% if review.comment %}
+                                <p class="card-text">{{ review.comment }}</p>
+                            {% else %}
+                                <p class="card-text text-muted fst-italic">No comment provided.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-chat-square-text display-1 text-muted"></i>
+            <h3 class="mt-3">No reviews yet</h3>
+            <p class="text-muted">Be the first one to add a review for this book!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

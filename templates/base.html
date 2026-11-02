@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}BookHub | Discover Your Next Favorite{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="container text-center">
+            <i class="bi bi-book-half me-2"></i>
+            Every great journey begins with a book.
+            <span class="announcement-highlight">Find yours today.</span>
+        </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <nav class="navbar navbar-expand-lg bookhub-navbar sticky-top">
+        <div class="container">
+
+            <!-- Brand -->
+            <a class="navbar-brand bookhub-brand" href="/">
+                <span class="brand-icon">
+                    <i class="bi bi-book-half"></i>
+                </span>
+                <span>Book<span class="brand-highlight">Hub</span></span>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#bookhubNavbar"
+                    aria-controls="bookhubNavbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bookhubNavbar">
+
+                <!-- Navigation Links -->
+                <ul class="navbar-nav mx-lg-auto mb-3 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi bi-house-door me-1"></i> Home
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'favorites' %}">
+                            <i class="bi bi-heart me-1"></i> Favorites
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'reading_list' %}">
+                            <i class="bi bi-bookmark-check me-1"></i> My Reading
+                        </a>
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+                <!-- Right Actions -->
+                <div class="navbar-actions d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
+                        <!-- Search -->
+                        <form action="{% url 'home' %}" method="get"
+                              class="navbar-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text" name="q"
+                                   placeholder="Find a book..."
+                                   aria-label="Search books"
+                                   value="{{ query }}">
+                            <button type='submit' class='btn btn-primary'>Search</button>
+                        </form>
+                        
+
+                    {% if user.is_authenticated %}
+
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <button class="btn profile-menu-btn dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+
+                                <span class="profile-avatar">
+                                    <i class="bi bi-person-fill"></i>
+                                </span>
+
+                                <span class="d-inline d-lg-none d-xl-inline">
+                                    {{ user.username }}
+                                </span>
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end bookhub-dropdown">
+
+                                <li class="dropdown-header">
+                                    Your Account
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'profile' %}">
+                                        <i class="bi bi-person me-2"></i> My Profile
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'edit_profile' %}">
+                                        <i class="bi bi-gear me-2"></i> Edit Profile
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'change_password' %}">
+                                        <i class="bi bi-shield-lock me-2"></i> Change Password
+                                    </a>
+                                </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li>
+                                    <form action="{% url 'logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item logout-item">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+
+                            </ul>
+                        </div>
+
+                    {% else %}
+
+                        <a href="{% url 'login' %}" class="btn login-btn">
+                            Login
+                        </a>
+
+                        <a href="{% url 'signup' %}" class="btn signup-btn">
+                            Get Started <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Django Messages -->
+    {% if messages %}
+    <div class="container messages-container">
+
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show bookhub-alert"
+             role="alert">
+
+            {% if message.tags == 'success' %}
+                <i class="bi bi-check-circle-fill me-2"></i>
+            {% elif message.tags == 'error' %}
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+            {% else %}
+                <i class="bi bi-info-circle-fill me-2"></i>
+            {% endif %}
+
+            {{ message }}
+
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bookhub-footer">
+        <div class="container">
+
+            <div class="row gy-4">
+
+                <!-- Brand Info -->
+                <div class="col-lg-5 col-md-6">
+
+                    <a class="footer-brand" href="/">
+                        <i class="bi bi-book-half me-2"></i>
+                        Book<span>Hub</span>
+                    </a>
+
+                    <p class="footer-description">
+                        A home for curious minds and passionate readers.
+                        Discover new stories, explore new ideas, and build
+                        your own reading journey.
+                    </p>
+
+                    <div class="footer-socials">
+                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="bi bi-github"></i></a>
+                    </div>
+
+                </div>
+
+                <!-- Explore -->
+                <div class="col-6 col-lg-2 col-md-3">
+                    <h6 class="footer-heading">Explore</h6>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        {% comment %} <li><a href="#">Categories</a></li> {% endcomment %}
+                        <li><a href="#">Popular Books</a></li>
+                        <li><a href="#">New Arrivals</a></li>
+                    </ul>
+                </div>
+
+                <!-- Your Library -->
+                <div class="col-6 col-lg-2 col-md-3">
+                    <h6 class="footer-heading">Your Library</h6>
+                    <ul class="footer-links">
+
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'favorites' %}">Favorites</a></li>
+                        <li><a href="{% url 'reading_list' %}">Reading List</a></li>
+                        <li><a href="{% url 'profile' %}">My Profile</a></li>
+                        {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'signup' %}">Create Account</a></li>
+                        {% endif %}
+
+                    </ul>
+                </div>
+
+                <!-- Quote -->
+                <div class="col-lg-3">
+                    <div class="footer-quote">
+                        <i class="bi bi-quote"></i>
+                        <p>
+                            A book is a dream that you hold in your hands.
+                        </p>
+                        <span>— Neil Gaiman</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>
+                    &copy; {% now "Y" %} BookHub.
+                    Made for people who love to read.
+                </p>
+
+                <a href="#top" class="back-to-top">
+                    Back to top <i class="bi bi-arrow-up"></i>
+                </a>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>
